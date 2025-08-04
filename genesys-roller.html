@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genesys Dice Roller</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a202c; /* Dark gray background */
+            color: #e2e8f0; /* Light gray text */
+        }
+        .die-button {
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .die-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .roll-button {
+            transition: all 0.2s;
+            background: linear-gradient(145deg, #4c51bf, #667eea);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .roll-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="p-6">
+    <div class="max-w-xl mx-auto bg-gray-800 p-6 rounded-2xl shadow-xl border border-gray-700">
+        <h1 class="text-3xl font-bold text-center mb-6 text-indigo-400">Genesys Dice Roller</h1>
+        <p class="text-center text-sm text-gray-400 mb-6">
+            Add the dice you need and click "Roll". The results will be displayed below.
+        </p>
+
+        <!-- Dice Selection Section -->
+        <div id="dice-selector" class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
+            <!-- Ability Die (Green d8) -->
+            <div class="flex items-center justify-between p-3 rounded-xl bg-gray-700">
+                <span class="text-lg font-semibold">Ability (G)</span>
+                <div class="flex items-center space-x-2">
+                    <button data-die="ability" data-action="remove" class="die-button bg-gray-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-xl hover:bg-gray-500">-</button>
+                    <span id="ability-count" class="text-xl font-bold w-6 text-center">0</span>
+                    <button data-die="ability" data-action="add" class="die-button bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-xl hover:bg-green-400">+</button>
+                </div>
+            </div>
+
+            <!-- Proficiency Die (Yellow d12) -->
+            <div class="flex items-center justify-between p-3 rounded-xl bg-gray-700">
+                <span class="text-lg font-semibold">Proficiency (Y)</span>
+                <div class="flex items-center space-x-2">
+                    <button data-die="proficiency" data-action="remove" class="die-button bg-gray-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-xl hover:bg-gray-500">-</button>
+                    <span id="proficiency-count" class="text-xl font-bold w-6 text-center">0</span>
+                    <button data-die="proficiency" data-action="add" class="die-button bg-yellow-400 text-gray-800 rounded-full w-8 h-8 flex items-center justify-center font-bold text-xl hover:bg-yellow-300">+</button>
+                </div>
+            </div>
+
+            <!-- Difficulty Die (Purple d8) -->
+            <div class="flex items-center justify-between p-3 rounded-xl bg-gray-700">
+                <span class="text-lg font-semibold">Difficulty (P)</span>
+                <div class="flex items-center space-x-2">
+                    <button data-die="difficulty" data-action="remove" class="die-button bg-gray-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-xl hover:bg-gray-500">-</button>
+                    <span id="difficulty-count" class="text-xl font-bold w-6 text-center">0</span>
+                    <button data-die="difficulty" data-action="add" class="die-button bg-purple-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-xl hover:bg-purple-400">+</button>
+                </div>
+            </div>
+
+            <!-- Challenge Die (Red d12) -->
+            <div class="flex items-center justify-between p-3 rounded-xl bg-gray-700">
+                <span class="text-lg font-semibold">Challenge (R)</span>
+                <div class="flex items-center space-x-2">
+                    <button data-die="challenge" data-action="remove" class="die-button bg-gray-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-xl hover:bg-gray-500">-</button>
+                    <span id="challenge-count" class="text-xl font-bold w-6 text-center">0</span>
+                    <button data-die="challenge" data-action="add" class="die-button bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-xl hover:bg-red-400">+</button>
+                </div>
+            </div>
+
+            <!-- Boost Die (Light Blue d6) -->
+            <div class="flex items-center justify-between p-3 rounded-xl bg-gray-700">
+                <span class="text-lg font-semibold">Boost (Bl)</span>
+                <div class="flex items-center space-x-2">
+                    <button data-die="boost" data-action="remove" class="die-button bg-gray-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-xl hover:bg-gray-500">-</button>
+                    <span id="boost-count" class="text-xl font-bold w-6 text-center">0</span>
+                    <button data-die="boost" data-action="add" class="die-button bg-cyan-400 text-gray-800 rounded-full w-8 h-8 flex items-center justify-center font-bold text-xl hover:bg-cyan-300">+</button>
+                </div>
+            </div>
+
+            <!-- Setback Die (Black d6) -->
+            <div class="flex items-center justify-between p-3 rounded-xl bg-gray-700">
+                <span class="text-lg font-semibold">Setback (Bk)</span>
+                <div class="flex items-center space-x-2">
+                    <button data-die="setback" data-action="remove" class="die-button bg-gray-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-xl hover:bg-gray-500">-</button>
+                    <span id="setback-count" class="text-xl font-bold w-6 text-center">0</span>
+                    <button data-die="setback" data-action="add" class="die-button bg-gray-900 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-xl hover:bg-gray-700">+</button>
+                </div>
+            </div>
+
+            <!-- Force Die (White d12) -->
+            <div class="flex items-center justify-between p-3 rounded-xl bg-gray-700 col-span-2 sm:col-span-1 mx-auto sm:mx-0 w-full">
+                <span class="text-lg font-semibold">Force (W)</span>
+                <div class="flex items-center space-x-2">
+                    <button data-die="force" data-action="remove" class="die-button bg-gray-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-xl hover:bg-gray-500">-</button>
+                    <span id="force-count" class="text-xl font-bold w-6 text-center">0</span>
+                    <button data-die="force" data-action="add" class="die-button bg-white text-gray-800 rounded-full w-8 h-8 flex items-center justify-center font-bold text-xl hover:bg-gray-200">+</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Roll Button -->
+        <div class="flex justify-center mb-8">
+            <button id="roll-button" class="roll-button text-white font-bold py-3 px-8 rounded-full text-xl uppercase">Roll Dice</button>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results-container" class="hidden">
+            <h2 class="text-2xl font-bold text-center mb-4 text-indigo-300">Results</h2>
+
+            <!-- Rolled Symbols -->
+            <div id="rolled-dice" class="flex flex-wrap justify-center gap-2 mb-6"></div>
+
+            <!-- Tally of Symbols -->
+            <div id="symbol-tally" class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4"></div>
+
+            <!-- Final Result -->
+            <div id="final-result" class="text-center font-bold text-2xl"></div>
+        </div>
+
+        <!-- Message Box for No Dice Selected -->
+        <div id="message-box" class="hidden bg-yellow-800 text-yellow-100 p-4 rounded-xl text-center">
+            Please add at least one die to roll.
+        </div>
+    </div>
+
+    <script>
+        // Dice faces for each die type
+        const dieFaces = {
+            ability: ['Success', 'Success', 'Advantage', 'Success-Advantage', 'Advantage-Advantage', 'Success', 'Advantage', 'Blank'],
+            proficiency: ['Success', 'Success-Advantage', 'Advantage-Advantage', 'Triumph', 'Success-Success', 'Success-Advantage', 'Success', 'Advantage-Advantage', 'Advantage', 'Advantage', 'Blank', 'Blank'],
+            difficulty: ['Failure', 'Threat', 'Threat', 'Threat-Threat', 'Threat-Failure', 'Failure', 'Threat-Threat', 'Blank'],
+            challenge: ['Failure', 'Failure', 'Threat-Threat', 'Despair', 'Threat-Failure', 'Threat', 'Threat-Threat', 'Failure-Threat', 'Threat', 'Failure-Failure', 'Blank', 'Blank'],
+            boost: ['Success-Advantage', 'Success', 'Advantage-Advantage', 'Advantage', 'Blank', 'Blank'],
+            setback: ['Threat', 'Threat', 'Failure', 'Failure', 'Blank', 'Blank'],
+            force: ['Dark', 'Dark', 'Dark', 'Dark', 'Dark', 'Dark', 'Dark-Dark', 'Light', 'Light', 'Light', 'Light', 'Light-Light'],
+        };
+
+        // State to keep track of the number of each die type
+        let diceCounts = {
+            ability: 0,
+            proficiency: 0,
+            difficulty: 0,
+            challenge: 0,
+            boost: 0,
+            setback: 0,
+            force: 0,
+        };
+
+        // Get DOM elements
+        const diceSelector = document.getElementById('dice-selector');
+        const rollButton = document.getElementById('roll-button');
+        const resultsContainer = document.getElementById('results-container');
+        const rolledDiceContainer = document.getElementById('rolled-dice');
+        const symbolTallyContainer = document.getElementById('symbol-tally');
+        const finalResultContainer = document.getElementById('final-result');
+        const messageBox = document.getElementById('message-box');
+
+        // Function to update the UI with the current die counts
+        function updateUI() {
+            for (const die in diceCounts) {
+                document.getElementById(`${die}-count`).textContent = diceCounts[die];
+            }
+        }
+
+        // Event listener for adding/removing dice
+        diceSelector.addEventListener('click', (e) => {
+            const button = e.target.closest('button');
+            if (!button) return;
+
+            const dieType = button.dataset.die;
+            const action = button.dataset.action;
+
+            if (action === 'add') {
+                diceCounts[dieType]++;
+            } else if (action === 'remove' && diceCounts[dieType] > 0) {
+                diceCounts[dieType]--;
+            }
+            
+            // Hide message box if at least one die is present
+            const totalDice = Object.values(diceCounts).reduce((sum, count) => sum + count, 0);
+            messageBox.classList.toggle('hidden', totalDice > 0);
+
+            updateUI();
+        });
+
+        // Function to handle the dice roll
+        rollButton.addEventListener('click', () => {
+            const totalDice = Object.values(diceCounts).reduce((sum, count) => sum + count, 0);
+            if (totalDice === 0) {
+                messageBox.classList.remove('hidden');
+                resultsContainer.classList.add('hidden');
+                return;
+            }
+
+            messageBox.classList.add('hidden');
+            resultsContainer.classList.remove('hidden');
+            rolledDiceContainer.innerHTML = '';
+            symbolTallyContainer.innerHTML = '';
+            finalResultContainer.innerHTML = '';
+
+            const results = [];
+            const tally = {};
+
+            // Roll each die and collect the results
+            for (const dieType in diceCounts) {
+                for (let i = 0; i < diceCounts[dieType]; i++) {
+                    const faces = dieFaces[dieType];
+                    const randomFace = faces[Math.floor(Math.random() * faces.length)];
+                    results.push({ type: dieType, face: randomFace });
+                }
+            }
+            
+            // Display each rolled die face
+            results.forEach(result => {
+                const faceDisplay = document.createElement('div');
+                let symbolText = result.face;
+                let bgColorClass = 'bg-gray-600'; // Default
+                let textColorClass = 'text-white';
+                let borderColorClass = 'border-gray-500';
+
+                // Assign colors based on die type
+                switch (result.type) {
+                    case 'ability': bgColorClass = 'bg-green-500'; textColorClass = 'text-white'; borderColorClass = 'border-green-400'; break;
+                    case 'proficiency': bgColorClass = 'bg-yellow-400'; textColorClass = 'text-gray-800'; borderColorClass = 'border-yellow-300'; break;
+                    case 'difficulty': bgColorClass = 'bg-purple-500'; textColorClass = 'text-white'; borderColorClass = 'border-purple-400'; break;
+                    case 'challenge': bgColorClass = 'bg-red-500'; textColorClass = 'text-white'; borderColorClass = 'border-red-400'; break;
+                    case 'boost': bgColorClass = 'bg-cyan-400'; textColorClass = 'text-gray-800'; borderColorClass = 'border-cyan-300'; break;
+                    case 'setback': bgColorClass = 'bg-gray-900'; textColorClass = 'text-white'; borderColorClass = 'border-gray-700'; break;
+                    case 'force': bgColorClass = 'bg-white'; textColorClass = 'text-gray-800'; borderColorClass = 'border-gray-300'; break;
+                }
+
+                // Split faces with multiple symbols (e.g., 'Success-Advantage')
+                const symbols = result.face.split('-');
+                faceDisplay.innerHTML = symbols.map(s => {
+                    let symbolClass = '';
+                    switch (s) {
+                        case 'Success': symbolClass = 'text-green-300'; break;
+                        case 'Advantage': symbolClass = 'text-indigo-300'; break;
+                        case 'Failure': symbolClass = 'text-red-300'; break;
+                        case 'Threat': symbolClass = 'text-purple-300'; break;
+                        case 'Triumph': symbolClass = 'text-yellow-300'; break;
+                        case 'Despair': symbolClass = 'text-red-600'; break;
+                        case 'Light': symbolClass = 'text-white'; break;
+                        case 'Dark': symbolClass = 'text-gray-700'; break;
+                        default: symbolClass = 'text-gray-400'; break;
+                    }
+                    return `<span class="font-bold text-sm leading-none ${symbolClass}">${s.substring(0, 1)}</span>`;
+                }).join('');
+
+                faceDisplay.className = `p-2 rounded-lg text-center ${bgColorClass} ${textColorClass} border ${borderColorClass} text-sm font-bold flex items-center justify-center h-10 w-10`;
+                rolledDiceContainer.appendChild(faceDisplay);
+
+                // Tally the symbols
+                symbols.forEach(symbol => {
+                    if (symbol !== 'Blank') {
+                        tally[symbol] = (tally[symbol] || 0) + 1;
+                    }
+                });
+            });
+
+            // Calculate final net results
+            const netSuccess = (tally['Success'] || 0) + (tally['Triumph'] || 0) - (tally['Failure'] || 0) - (tally['Despair'] || 0);
+            const netAdvantage = (tally['Advantage'] || 0) - (tally['Threat'] || 0);
+            const triumph = tally['Triumph'] || 0;
+            const despair = tally['Despair'] || 0;
+            const lightSide = (tally['Light'] || 0);
+            const darkSide = (tally['Dark'] || 0);
+            
+            // Display symbol tally
+            const symbolNames = {
+                'Success': 'Success', 'Failure': 'Failure',
+                'Advantage': 'Advantage', 'Threat': 'Threat',
+                'Triumph': 'Triumph', 'Despair': 'Despair',
+                'Light': 'Light Side', 'Dark': 'Dark Side'
+            };
+
+            const tallyOrder = ['Success', 'Failure', 'Advantage', 'Threat', 'Triumph', 'Despair', 'Light', 'Dark'];
+            tallyOrder.forEach(symbol => {
+                if (tally[symbol]) {
+                    const tallyItem = document.createElement('div');
+                    tallyItem.className = 'flex items-center justify-between p-3 rounded-xl bg-gray-700';
+                    tallyItem.innerHTML = `<span class="text-lg font-semibold">${symbolNames[symbol]}</span> <span class="text-2xl font-bold text-white">${tally[symbol]}</span>`;
+                    symbolTallyContainer.appendChild(tallyItem);
+                }
+            });
+
+            // Display the final result text
+            const finalResultText = [];
+            if (netSuccess > 0) finalResultText.push(`${netSuccess} Success${netSuccess > 1 ? 'es' : ''}`);
+            if (netSuccess < 0) finalResultText.push(`${-netSuccess} Failure${-netSuccess > 1 ? 's' : ''}`);
+            if (netSuccess === 0) finalResultText.push(`Neutral Outcome`);
+
+            if (netAdvantage > 0) finalResultText.push(`${netAdvantage} Advantage${netAdvantage > 1 ? 's' : ''}`);
+            if (netAdvantage < 0) finalResultText.push(`${-netAdvantage} Threat${-netAdvantage > 1 ? 's' : ''}`);
+
+            if (triumph > 0) finalResultText.push(`${triumph} Triumph${triumph > 1 ? 's' : ''}`);
+            if (despair > 0) finalResultText.push(`${despair} Despair`);
+
+            if (lightSide > 0) finalResultText.push(`${lightSide} Light Side Point${lightSide > 1 ? 's' : ''}`);
+            if (darkSide > 0) finalResultText.push(`${darkSide} Dark Side Point${darkSide > 1 ? 's' : ''}`);
+
+            finalResultContainer.textContent = finalResultText.join(', ');
+        });
+
+        // Initialize UI on load
+        updateUI();
+    </script>
+</body>
+</html>
