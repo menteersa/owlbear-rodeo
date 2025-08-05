@@ -1,0 +1,7 @@
+{
+  "name": "Genesys Dice Roller",
+  "description": "Custom dice roller for the Genesys RPG system",
+  "main": "index.html",
+  "type": "ui",
+  "permissions": []
+}
