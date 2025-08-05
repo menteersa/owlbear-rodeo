@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Genesys Dice Roller</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>Genesys Dice Roller</h1>
+  <div id="dice-controls">
+    <label>Ability (Green): <input type="number" id="ability" value="0" min="0" /></label><br />
+    <label>Proficiency (Yellow): <input type="number" id="proficiency" value="0" min="0" /></label><br />
+    <label>Boost (Blue): <input type="number" id="boost" value="0" min="0" /></label><br />
+    <label>Difficulty (Purple): <input type="number" id="difficulty" value="0" min="0" /></label><br />
+    <label>Challenge (Red): <input type="number" id="challenge" value="0" min="0" /></label><br />
+    <label>Setback (Black): <input type="number" id="setback" value="0" min="0" /></label><br />
+    <button onclick="rollDice()">Roll</button>
+  </div>
+  <div id="results"></div>
+  <script src="script.js"></script>
+</body>
+</html>
