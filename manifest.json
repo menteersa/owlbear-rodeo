@@ -2,6 +2,7 @@
   "name": "Genesys Dice Roller",
   "version": "1.0.0",
   "manifest_version": 1,
+  "main": "index.html",
   "action": {
     "title": "Genesys Dice Roller",
     "icon": "https://www.vecteezy.com/vector-art/14969414-dice-d20-vector-icon-design.jpg",
@@ -9,4 +10,5 @@
     "height": 600,
     "width": 400
   }
+
 }
